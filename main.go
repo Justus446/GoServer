@@ -18,7 +18,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("name")
 
 	response := QueryResponse{
-		Message: "Welcome to the HomePage" + query,
+		Message: "Welcome to the HomePage " + query,
 		Method: r.Method,
 		Query: query,
 	}
