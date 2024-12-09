@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"text/template"
 )
 
 type QueryResponse struct {
@@ -22,25 +23,29 @@ func index(w http.ResponseWriter, r *http.Request) {
 		Query: query,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(response)
+	// Parse and render template with data
+	indexPage, err := template.ParseFiles("index.html")
+	if err != nil {
+		log.Fatalf("Error while parsing the template: %v", err)
+	}
+
+	// Pass response to template
+	err = indexPage.Execute(w, response)
+	if err != nil {
+		log.Printf("Error executing template: %v", err)
+	}
 
 
 
-	// fmt.Fprintf(w, "Welcome, to the HomePage justus!")
 	o := os.Stdout
 	fmt.Fprintf(o, "Server running!")
-	if r.Method == "GET" {
-		fmt.Println("HTTP method GET")
-	}
-	fmt.Println("Endpoint Hit: homePage")
-	fmt.Println("Endpoint Hit: path", r.URL.Path,"\n header....",r.Header,"\n Body.....",r.Body,"\nMethod>>>>>",r.Method,"\n Query>>>>>",r.URL.Query())
+
 
 }
 
 func main() {
 	// Code
 	http.HandleFunc("/", index)
-	http.ListenAndServe(":8089", nil)
+	log.Fatal(http.ListenAndServe(":8085", nil))
 }
