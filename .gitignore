@@ -1,0 +1,10 @@
+tmp/
+*.exe
+*.dll
+*.so
+*.out
+.vscode/
+go.sum
+*.log
+
+
