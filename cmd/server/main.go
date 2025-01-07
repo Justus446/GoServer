@@ -1,51 +1,20 @@
 package main
-
-import (
-	"fmt"
-	"log"
+ import(
+	"go-server/internal/handlers"
+	"go-server/pkg/db"
 	"net/http"
-	"os"
-	"text/template"
-)
+	"log"
 
-type QueryResponse struct {
-	Message string `json:"message"`
-	Method string `json:"method"`
-	Query string `json:"query"`
-}
+ )
 
-func index(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("name")
+ func main(){
+	database := db.ConnectPostgres()
+	defer database.Close()
 
-	response := QueryResponse{
-		Message: "Welcome to the HomePage " + query,
-		Method: r.Method,
-		Query: query,
-	}
+	http.HandleFunc("/", handlers.IndexHandler(database))
+	http.HandleFunc("/createPatient", handlers.CreatePatientHandler(database))
 
-
-	// Parse and render template with data
-	indexPage, err := template.ParseFiles("index.html")
-	if err != nil {
-		log.Fatalf("Error while parsing the template: %v", err)
-	}
-
-	// Pass response to template
-	err = indexPage.Execute(w, response)
-	if err != nil {
-		log.Printf("Error executing template: %v", err)
-	}
-
-
-
-	o := os.Stdout
-	fmt.Fprintf(o, "Server running!")
-
-
-}
-
-func main() {
-	// Code
-	http.HandleFunc("/", index)
-	log.Fatal(http.ListenAndServe(":8085", nil))
-}
+	log.Println("Server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+	
+ }
