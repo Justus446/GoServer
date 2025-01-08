@@ -9,7 +9,9 @@ import (
 	"strconv"
 )
 
-var templates = template.Must(template.ParseGlob("templates/*.html"))
+var patientTemplate = template.Must(template.ParseGlob("../../templates/patient/*.html"))
+var indexTemplate = template.Must(template.ParseGlob("../../templates/index.html"))
+
 
 func IndexHandler(db *sql.DB) http.HandlerFunc{
 	return func(w http.ResponseWriter, r *http.Request){
@@ -18,7 +20,7 @@ func IndexHandler(db *sql.DB) http.HandlerFunc{
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		templates.ExecuteTemplate(w, "index.html", patients)
+		indexTemplate.ExecuteTemplate(w, "index.html", patients)
 	}
 }
 
@@ -39,7 +41,7 @@ func CreatePatientHandler(db *sql.DB) http.HandlerFunc {
             http.Redirect(w, r, "/", http.StatusSeeOther)
             return
         }
-        templates.ExecuteTemplate(w, "create.html", nil)
+        patientTemplate.ExecuteTemplate(w, "createPatient.html", nil)
     }
 }
 
